@@ -31,7 +31,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
     Location currentLocation;
+    
+    //is used for accessing the device's last known location and receiving location updates
     FusedLocationProviderClient fusedLocationProviderClient;
+    
+    //request permission from the user to access the device's location, 
+    //and to check whether the permission was granted or not in the onRequestPermissionsResult() method
     private static final int REQUEST_CODE = 101;
 
     @Override
@@ -72,6 +77,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void getCurrentLocation(){
+        //check if the app has been granted permission to access the user's location.
         if (ActivityCompat.checkSelfPermission(
                 this, Manifest.permission.ACCESS_FINE_LOCATION) !=
                 PackageManager.PERMISSION_GRANTED
@@ -100,10 +106,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
+        //create a request for the user's current location
         LocationRequest mLocationRequest = LocationRequest.create();
+        
+        //sets the interval at which the app receives location updates
         mLocationRequest.setInterval(60000);
+        
+        //sets the fastest rate at which the app can handle location updates
         mLocationRequest.setFastestInterval(5000);
+        
+        //sets the priority level of the request, which determines the accuracy of the location data received
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        
+        //receive location updates when they become available
         LocationCallback mLocationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
@@ -125,9 +140,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         };
     }
 
+    // handle the result of a permission request and take appropriate action based on whether the permission was granted or not
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        
+        // the switch statement checks the requestCode to see if it matches the REQUEST_CODE constant that was defined earlier.
+        // If the user granted the permission, the getCurrentLocation() method is called to retrieve the current location of the device.
+        // If the permission was not granted, the method does nothing.
         switch (REQUEST_CODE) {
             case REQUEST_CODE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
